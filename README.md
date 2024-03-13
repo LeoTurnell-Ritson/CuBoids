@@ -6,10 +6,10 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
 
 ## Roadmap
 
-- [] Distributed boit logic for GPU acceleration
-   - [] ???
-- [] optimization
-   - [] ???
+- [ ] Distributed boit logic for GPU acceleration
+   - [ ] ???
+- [ ] optimization
+   - [ ] ???
   
 ## Licence
 
