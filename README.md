@@ -8,6 +8,7 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
 - Structures for BOID representation:
    - x, y, dx, dy
 - CUDA Kernel Functions:
+   - Get random initialisation of Positions from the CPU in the beginning. Do not want to programm a pseudo random generator in CUDA... although can probablby easiliy be done with atomic instructions... if supported.
    - GetNeighbours
    - ParallelSort
    - BOID
@@ -16,7 +17,7 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
 - Datastorage for Output:
    - Plain text for now, or binary, nothing fancy.
 - Datadisplay:
-  - External Python
+   - External Python
 
 ## Licence
 
