@@ -5,13 +5,6 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
 ## Getting Started
 
 ## Roadmap
-
-- [] Distributed boit logic for GPU acceleration
-   - [] ???
-- [] optimization
-   - [] ???
-
-# Basic Roadplan:
 - Structures for BOID representation:
    - x, y, dx, dy
 - CUDA Kernel Functions:
