@@ -18,6 +18,44 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
    - Plain text for now, or binary, nothing fancy.
 - Datadisplay:
    - External Python
+ 
+## Example Flowchart
+Can i label this???
+
+```mermaid
+flowchart TB
+    subgraph CPU
+        direction TB
+        CPU_1[Initalisation]
+        CPU_2[Variables]
+        CPU_3[save in file]
+        CPU_1 --> CPU_2
+        CPU_2 --after update-->CPU_3
+    end
+    subgraph GPU with CUDA
+        direction TB
+        GPU_1[Variables]
+        subgraph BOID Logic
+        GPU_6[basic logic function]
+        GPU_2[find_neighbour]
+        GPU_3[hashtable]
+        GPU_4[sort]
+        GPU_5[boundary check]
+        GPU_7[FriendOrFoe check]
+        end
+        GPU_6 --> GPU_2
+        GPU_6 --> GPU_5
+        GPU_6 --> GPU_7
+        GPU_2 --- GPU_3
+        GPU_3 --- GPU_4
+        GPU_1 --read--- GPU_6
+        GPU_6 --update-->GPU_1
+    end
+%%CPU_2 --get update---GPU_1
+CPU_2 --initalise--> GPU_1
+GPU_1 --get update--- CPU_2
+```
+
 
 ## Licence
 
