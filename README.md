@@ -23,15 +23,7 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
 Can i label this???
 
 ```mermaid
-flowchart TB
-    subgraph CPU
-        direction TB
-        CPU_1[Initalisation]
-        CPU_2[Variables]
-        CPU_3[save in file]
-        CPU_1 --> CPU_2
-        CPU_2 --after update-->CPU_3
-    end
+flowchart
     subgraph GPU with CUDA
         direction TB
         GPU_1[Variables]
@@ -48,12 +40,19 @@ flowchart TB
         GPU_6 --> GPU_7
         GPU_2 --- GPU_3
         GPU_3 --- GPU_4
-        GPU_1 --read--- GPU_6
+        GPU_6 --read--> GPU_1
         GPU_6 --update-->GPU_1
     end
-%%CPU_2 --get update---GPU_1
+    subgraph CPU
+        direction TB
+        CPU_1[Initalisation]
+        CPU_2[Variables]
+        CPU_3[save in file]
+        CPU_1 --> CPU_2
+        CPU_2 --after update-->CPU_3
+    end
 CPU_2 --initalise--> GPU_1
-GPU_1 --get update--- CPU_2
+CPU_2 --get update--> GPU_1
 ```
 
 
