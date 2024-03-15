@@ -1,1 +1,1 @@
-nvcc --verbose --std=11 --Wall --Wextra --Werror -o bin/main src/hello_world.cu 
+nvcc --verbose --x=cu --std=c++11 -o bin/main src/hello_world.cu 
