@@ -55,7 +55,7 @@ CPU_2 --get update--> GPU_1
 ```
 
 ## Class and function overview
-// for documention of mermaid editor https://mermaid.js.org/syntax/classDiagram.html
+<!-- for documentation of mermaid editor https://mermaid.js.org/syntax/classDiagram.html -->
 ```mermaid
 classDiagram
     direction LR
@@ -76,18 +76,27 @@ classDiagram
 
 ## Aditional Souces
 
-CUDA - Amazing Lecture notes:
-https://cis565-fall-2021.github.io/syllabus/
-https://github.com/CIS565-Fall-2023/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md
-[Pennsylvania 2022 Lecture introduction](https://github.com/CIS565-Fall-2022/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md)
-[Pennsylvania Assignment DONE](https://github.com/AmanSachan1/CUDA-Boid-Flocking/tree/master)
-[caltech lecture with notes](http://courses.cms.caltech.edu/cs179/)
-[Pennsylvania setup Hardware](steup: https://cis565-fall-2022.github.io/setup/)
-[setup Hardware](https://cis565-fall-2022.github.io/setup-linux/)
+__CUDA - Amazing Lecture notes:__
 
-BOIDS:
+https://cis565-fall-2021.github.io/syllabus/
+
+https://github.com/CIS565-Fall-2023/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md
+
+[Pennsylvania 2022 Lecture introduction](https://github.com/CIS565-Fall-2022/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md)
+
+[Pennsylvania Assignment DONE](https://github.com/AmanSachan1/CUDA-Boid-Flocking/tree/master)
+
+[caltech lecture with notes](http://courses.cms.caltech.edu/cs179/)
+
+[Pennsylvania hardware setup](https://cis565-fall-2022.github.io/setup/)
+
+[Hardware setup for linux](https://cis565-fall-2022.github.io/setup-linux/)
+
+__BOIDS:__
+
 [Paper on BOIDS revisited](https://www.tandfonline.com/doi/full/10.1080/13873950600883485)
-[online introduction do BOIDS](https://betterprogramming.pub/mastering-flock-simulation-with-boids-c-opengl-and-imgui-5a3ddd9cb958)
+
+[online introduction to BOIDS](https://betterprogramming.pub/mastering-flock-simulation-with-boids-c-opengl-and-imgui-5a3ddd9cb958)
 
 
 ## Licence
