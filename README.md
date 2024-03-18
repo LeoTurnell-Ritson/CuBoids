@@ -6,21 +6,20 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
 
 ## Roadmap
 - Structures for BOID representation:
-   - x, y, dx, dy
+   - x, y, z, dx, dy, dz
 - CUDA Kernel Functions:
-   - Get random initialisation of Positions from the CPU in the beginning. Do not want to programm a pseudo random generator in CUDA... although can probablby easiliy be done with atomic instructions... if supported.
+   - Get random initialisation of Positions from the CPU in the beginning.
    - GetNeighbours
    - ParallelSort
    - BOID
       - sensory information: near wall or boundary, close BOIDS with there distance/orientation/velocity
-         - firendly or predetory behaviour? Avoidance or Follow?
+      - firendly or predetory behaviour? Avoidance or Follow?
 - Datastorage for Output:
    - Plain text for now, or binary, nothing fancy.
 - Datadisplay:
    - External Python
  
-## Example Flowchart
-Can i label this???
+## The program flowchart
 
 ```mermaid
 flowchart
@@ -54,6 +53,41 @@ flowchart
 CPU_2 --initalise--> GPU_1
 CPU_2 --get update--> GPU_1
 ```
+
+## Class and function overview
+// for documention of mermaid editor https://mermaid.js.org/syntax/classDiagram.html
+```mermaid
+classDiagram
+    direction LR
+    class BOID{
+        +float position x, y, z
+        +float velocity dx, dy, dz
+        +int GridID gx, gy, gz
+        +int species
+        +boid_logic()
+        +check_obstacle()
+    }
+
+    note for HashtableLookup "implementation depends if\n functionality is external\n or if BOIDS itself is saved in a gridcell"
+    class HashtableLookup{
+        
+    }
+```
+
+## Aditional Souces
+
+CUDA - Amazing Lecture notes:
+https://cis565-fall-2021.github.io/syllabus/
+https://github.com/CIS565-Fall-2023/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md
+[Pennsylvania 2022 Lecture introduction](https://github.com/CIS565-Fall-2022/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md)
+[Pennsylvania Assignment DONE](https://github.com/AmanSachan1/CUDA-Boid-Flocking/tree/master)
+[caltech lecture with notes](http://courses.cms.caltech.edu/cs179/)
+[Pennsylvania setup Hardware](steup: https://cis565-fall-2022.github.io/setup/)
+[setup Hardware](https://cis565-fall-2022.github.io/setup-linux/)
+
+BOIDS:
+[Paper on BOIDS revisited](https://www.tandfonline.com/doi/full/10.1080/13873950600883485)
+[online introduction do BOIDS](https://betterprogramming.pub/mastering-flock-simulation-with-boids-c-opengl-and-imgui-5a3ddd9cb958)
 
 
 ## Licence
