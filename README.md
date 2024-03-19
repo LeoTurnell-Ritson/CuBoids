@@ -12,11 +12,11 @@ Explorative sandbox for GPU accelerated C and CUDA, with Boids "bird-oid objects
    - GetNeighbours
    - ParallelSort
    - BOID
-      - sensory information: near wall or boundary, close BOIDS with there distance/orientation/velocity
-      - firendly or predetory behaviour? Avoidance or Follow?
-- Datastorage for Output:
+      - sensory information: near wall or boundary, close BOIDS with their distance/orientation/velocity
+      - friendly or predatory behavior? Avoidance or Follow?
+- Data storage for Output:
    - Plain text for now, or binary, nothing fancy.
-- Datadisplay:
+- Data display:
    - External Python
  
 ## The program flowchart
@@ -50,7 +50,7 @@ flowchart
         CPU_1 --> CPU_2
         CPU_2 --after update-->CPU_3
     end
-CPU_2 --initalise--> GPU_1
+CPU_2 --initialise--> GPU_1
 CPU_2 --get update--> GPU_1
 ```
 
@@ -68,36 +68,26 @@ classDiagram
         +check_obstacle()
     }
 
-    note for HashtableLookup "implementation depends if\n functionality is external\n or if BOIDS itself is saved in a gridcell"
+    note for HashtableLookup "implementation depends if\n functionality is external\n or if BOIDS itself is saved in a grid cell"
     class HashtableLookup{
         
     }
 ```
 
-## Aditional Souces
+## Aditional Sources
 
 __CUDA - Lecture notes and introduction:__
-
 - [Pennsylvania Lecture plan and slides](https://cis565-fall-2021.github.io/syllabus/)
-
-- [Instrucution set for the Lecute course on CUDA flocking](https://github.com/CIS565-Fall-2023/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md)
-
+- [Instrucution set for the Lecture course on CUDA flocking](https://github.com/CIS565-Fall-2023/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md)
 - [Pennsylvania 2022 Lecture introduction](https://github.com/CIS565-Fall-2022/Project1-CUDA-Flocking/blob/main/INSTRUCTION.md)
-
 - [Pennsylvania Assignment DONE](https://github.com/AmanSachan1/CUDA-Boid-Flocking/tree/master)
-
 - [caltech lecture with notes](http://courses.cms.caltech.edu/cs179/)
-
 - [Pennsylvania hardware setup](https://cis565-fall-2022.github.io/setup/)
-
-- [Hardware setup for linux](https://cis565-fall-2022.github.io/setup-linux/)
+- [Hardware setup for Linux](https://cis565-fall-2022.github.io/setup-linux/)
 
 __BOIDS - Introduction and Logic:__
-
 - [Paper on BOIDS revisited](https://www.tandfonline.com/doi/full/10.1080/13873950600883485)
-
 - [online introduction to BOIDS](https://betterprogramming.pub/mastering-flock-simulation-with-boids-c-opengl-and-imgui-5a3ddd9cb958)
-
 
 ## Licence
 
