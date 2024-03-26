@@ -10,15 +10,16 @@
 
 //################################################################################
 // define variables
-#define n_bins 100
-#define n_boids 100000
+#define n_bins 10
+#define n_boids 1000000
 //################################################################################
 
 #define checkCUDAErrorWithLine(msg) checkCUDAError(msg, __LINE__)
 /*################################################################################
 Check for CUDA errors; print and exit if there was a problem.
 ################################################################################*/
-void checkCUDAError(const char *msg, int line = -1) {
+void checkCUDAError(const char *msg, int line = -1)
+{
   cudaError_t err = cudaGetLastError();
   if (cudaSuccess != err) {
     if (line >= 0) {
@@ -29,8 +30,12 @@ void checkCUDAError(const char *msg, int line = -1) {
   }
 }
 
-void get_GPU_information(){
-  // int device_id = 0; // You can change the device ID if you have multiple GPUs
+/*################################################################################
+* INFORMATION aboutthe GPU architecture
+* for debugging purpuses only!
+################################################################################*/
+void get_GPU_information()
+{
   int device_id;
   cudaDeviceProp prop;
   cudaGetDevice(&device_id);
@@ -84,10 +89,16 @@ __device__ int spatial_hash_2d(float x,float y, float gridsize, int hashlist_len
 *   Gross, J. et al, Fast and Efficient Nearest Neighbor Search for Particle Simulations
 *   https://doi.org/10.2312/cgvc.20191258
 ################################################################################*/
-__global__ void bin_sort(Boid* d_boids, int max_numberofboids , unsigned int* global_bins) 
+__global__ void bin_sort(Boid* d_boids, const int max_numberofboids , unsigned int* global_bins) 
 {
-  // initialise the shared bins for the local SM
-  __shared__ unsigned int shared_bins[n_bins];
+  // initialise the shared bins for the local SM and set start value to 0
+  // shared memor amount is speficied as the 3 argument in the kernel function call
+  extern __shared__ int shared_bins[];
+  for (int i = threadIdx.x; i < n_bins; i += blockDim.x) 
+  {
+    shared_bins[i] = 0;
+  }
+  __syncthreads();
 
   // get current ID of the thread (get current positition in the SM grid)
   int id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -104,7 +115,6 @@ __global__ void bin_sort(Boid* d_boids, int max_numberofboids , unsigned int* gl
     {
       printf("Boid %d - Position: (%f, %f, %f)__HASH: %d\n", id, d_boids[id].position_x, d_boids[id].position_y, d_boids[id].position_z, HASH);
     }
-
   }
 
   // Synchronize to ensure all threads have finished pushing to shared memory
@@ -165,12 +175,13 @@ void bin_sort_test()
   {
     h_bins[i] = 0;
   }
-  cudaMemcpy(d_bins, h_bins, n_bins * sizeof(unsigned int), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_bins, h_bins, n_bins * sizeof(int), cudaMemcpyHostToDevice);
   checkCUDAErrorWithLine("Memory copy: BINS");
 
   // get the number of threads per block
   // cudaDeviceProp prop;
-  // int device_id = 0; // change the device ID for used GPU
+  // int device_id // = 0; change the device ID for used GPU
+  // cudaGetDevice(&device_id); 
   // cudaGetDeviceProperties(&prop, device_id);
   // const int threads = prop.maxThreadsPerBlock/1;
   // const int threads = _ConvertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount;
@@ -183,7 +194,8 @@ void bin_sort_test()
 
   // Launch kernel to print Boid data on the device
   auto start = std::chrono::steady_clock::now();
-  bin_sort<<<numBlocks, threadsPerBlock>>>(d_boids,n_boids,d_bins);
+  // start cuda kernel and allocate shared bins memory dynamically.
+  bin_sort<<<numBlocks, threadsPerBlock , n_bins*sizeof(int)>>>(d_boids,n_boids,d_bins);
   checkCUDAErrorWithLine("Kernel start");
   
   cudaDeviceSynchronize();
@@ -193,16 +205,17 @@ void bin_sort_test()
   std::cout << std::chrono::duration<double, std::micro>(diff).count() << " µs | ";
   std::cout << 1000./std::chrono::duration<double, std::milli>(diff).count() << " it/s" << std::endl;
 
-
   // get the bins from the device
   cudaMemcpy(h_bins, d_bins, n_bins * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-  checkCUDAErrorWithLine("copy do host");
+  checkCUDAErrorWithLine("d_bins: copy do host");
 
   // print bins
   // /*
-  printf("bins: \n");
+  int count_in_bins = 0;
+  printf("bins: %d\n",n_bins);
   for (int i = 0; i<n_bins ; ++i)
   {
+    count_in_bins += h_bins[i];
     if (i<n_bins-1)
       if (h_bins[i]==0)
         printf("_ ");
@@ -216,12 +229,14 @@ void bin_sort_test()
         printf("%u\n",h_bins[i]);
     }
   }
+  printf("count in all bins: %d \n",count_in_bins);
   // */
     
   // Free allocated memory
   cudaFree(d_boids);
+  checkCUDAErrorWithLine("d_boids: Free memory");
   cudaFree(d_bins);
-  checkCUDAErrorWithLine("Free memory");
+  checkCUDAErrorWithLine("d_bins: Free memory");
 
   delete[] boids;
   delete[] h_bins;
