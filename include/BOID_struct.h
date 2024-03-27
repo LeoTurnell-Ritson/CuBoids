@@ -7,13 +7,13 @@ struct Boid
   float position_y;     // Y-coordinate of the position
   float position_z;     // Z-coordinate of the position
 
-  float velocity_x;     // X-component of the velocity
-  float velocity_y;     // Y-component of the velocity
-  float velocity_z;     // Z-component of the velocity
+  //float velocity_x;     // X-component of the velocity
+  //float velocity_y;     // Y-component of the velocity
+  //float velocity_z;     // Z-component of the velocity
 
-  float acceleration_x; // X-component of the acceleration
-  float acceleration_y; // Y-component of the acceleration
-  float acceleration_z; // Z-component of the acceleration
+  //float acceleration_x; // X-component of the acceleration
+  //float acceleration_y; // Y-component of the acceleration
+  //float acceleration_z; // Z-component of the acceleration
 
   // int mass;             // Mass of the boid
   // float max_speed;      // Maximum speed of the boid

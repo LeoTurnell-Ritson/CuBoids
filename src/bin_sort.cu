@@ -10,8 +10,8 @@
 
 //################################################################################
 // define variables
-#define n_bins 10
-#define n_boids 1000000
+#define n_bins 10000
+#define n_boids 100000000
 //################################################################################
 
 #define checkCUDAErrorWithLine(msg) checkCUDAError(msg, __LINE__)
@@ -65,7 +65,7 @@ void get_GPU_information()
 *   Ihmsen, M. et al. A Parallel SPH Implementation on Multi-Core CPUs. Computer Graphics Forum, 30: 99-112. 
 *   https://doi.org/10.1111/j.1467-8659.2010.01832.x
 ################################################################################*/
-__device__ int spatial_hash_3d(float x,float y,float z, float gridsize, int hashlist_length)
+__host__ __device__ int spatial_hash_3d(float x,float y,float z, float gridsize, int hashlist_length)
 {
   int c = (
     (static_cast<int>(x/gridsize)*static_cast<int>(73856093)) ^
@@ -84,12 +84,12 @@ __device__ int spatial_hash_2d(float x,float y, float gridsize, int hashlist_len
 }
 
 /*################################################################################
-* BIN SORTING
+* BIN SORTING -> using shared memory
 * implemented similar to: 
 *   Gross, J. et al, Fast and Efficient Nearest Neighbor Search for Particle Simulations
 *   https://doi.org/10.2312/cgvc.20191258
 ################################################################################*/
-__global__ void bin_sort(Boid* d_boids, const int max_numberofboids , unsigned int* global_bins) 
+__global__ void bin_sort_shared(Boid* d_boids, const int max_numberofboids , unsigned int* global_bins) 
 {
   // initialise the shared bins for the local SM and set start value to 0
   // shared memor amount is speficied as the 3 argument in the kernel function call
@@ -110,11 +110,13 @@ __global__ void bin_sort(Boid* d_boids, const int max_numberofboids , unsigned i
     int HASH = spatial_hash_3d(d_boids[id].position_x,d_boids[id].position_y,d_boids[id].position_z,static_cast<float>(5),n_bins);
     atomicAdd(&shared_bins[HASH], 1);
     
+    /*
     // Print out the first 10 boids for debugging
     if (id <10)
     {
       printf("Boid %d - Position: (%f, %f, %f)__HASH: %d\n", id, d_boids[id].position_x, d_boids[id].position_y, d_boids[id].position_z, HASH);
     }
+    */
   }
 
   // Synchronize to ensure all threads have finished pushing to shared memory
@@ -129,11 +131,42 @@ __global__ void bin_sort(Boid* d_boids, const int max_numberofboids , unsigned i
   return;
 }
 
+/*################################################################################
+* BIN SORTING -> NOT using shared memory
+* meant as a simple comparison for speed
+* preliminary test seems to indicate, thisfunction performs slower then the shared
+* memory function.
+* -> can be deleted!
+################################################################################*/
+__global__ void bin_sort_simple(Boid* d_boids, const int max_numberofboids , unsigned int* global_bins) 
+{
+  // get current ID of the thread (get current positition in the SM grid)
+  int id = blockIdx.x * blockDim.x + threadIdx.x;
+
+  // check for memory overflow, we just want to acces all boids and not outside.
+  if (id < max_numberofboids)
+  {
+    // calculate HASH and increment appropriate bin
+    int HASH = spatial_hash_3d(d_boids[id].position_x,d_boids[id].position_y,d_boids[id].position_z,static_cast<float>(5),n_bins);
+    atomicAdd(&global_bins[HASH], 1);
+    
+    /*
+    // Print out the first 10 boids for debugging
+    if (id <10)
+    {
+      printf("Boid %d - Position: (%f, %f, %f)__HASH: %d\n", id, d_boids[id].position_x, d_boids[id].position_y, d_boids[id].position_z, HASH);
+    }
+    */
+  }
+
+  return;
+}
+
 void bin_sort_test()
 {
-
   //print out some stats
   printf("number of boids: %d , number of bins: %d\n",n_boids,n_bins);
+  printf("size of boids: %lu MB\n",n_boids*sizeof(Boid)/1024/1024);
 
   // create array of boids
   Boid* boids = new Boid[n_boids];
@@ -195,7 +228,8 @@ void bin_sort_test()
   // Launch kernel to print Boid data on the device
   auto start = std::chrono::steady_clock::now();
   // start cuda kernel and allocate shared bins memory dynamically.
-  bin_sort<<<numBlocks, threadsPerBlock , n_bins*sizeof(int)>>>(d_boids,n_boids,d_bins);
+  // bin_sort_shared<<<numBlocks, threadsPerBlock , n_bins*sizeof(int)>>>(d_boids,n_boids,d_bins);
+  bin_sort_simple<<<numBlocks, threadsPerBlock>>>(d_boids,n_boids,d_bins);
   checkCUDAErrorWithLine("Kernel start");
   
   cudaDeviceSynchronize();
@@ -210,7 +244,7 @@ void bin_sort_test()
   checkCUDAErrorWithLine("d_bins: copy do host");
 
   // print bins
-  // /*
+  /*
   int count_in_bins = 0;
   printf("bins: %d\n",n_bins);
   for (int i = 0; i<n_bins ; ++i)
@@ -230,13 +264,53 @@ void bin_sort_test()
     }
   }
   printf("count in all bins: %d \n",count_in_bins);
-  // */
+  */
     
   // Free allocated memory
   cudaFree(d_boids);
   checkCUDAErrorWithLine("d_boids: Free memory");
   cudaFree(d_bins);
   checkCUDAErrorWithLine("d_bins: Free memory");
+
+  printf("binning on CPU\n");
+  for (int i = 0; i<n_bins ; ++i)
+  {
+    h_bins[i] = 0;
+  }
+
+  start = std::chrono::steady_clock::now();
+  for (int i=0; i<n_boids ; ++i)
+  {
+    int current_HASH = spatial_hash_3d(boids[i].position_x,boids[i].position_y,boids[i].position_z,static_cast<float>(5),n_bins);
+    h_bins[current_HASH] +=1;
+  }
+  end = std::chrono::steady_clock::now();
+  diff = end - start;
+  std::cout << std::chrono::duration<double, std::milli>(diff).count() << " ms | ";
+  std::cout << std::chrono::duration<double, std::micro>(diff).count() << " µs | ";
+  std::cout << 1000./std::chrono::duration<double, std::milli>(diff).count() << " it/s" << std::endl;
+
+  /*
+  count_in_bins = 0;
+  printf("bins: %d\n",n_bins);
+  for (int i = 0; i<n_bins ; ++i)
+  {
+    count_in_bins += h_bins[i];
+    if (i<n_bins-1)
+      if (h_bins[i]==0)
+        printf("_ ");
+      else      
+        printf("%u  ",h_bins[i]);
+    else
+    {
+      if (h_bins[i]==0)
+        printf("_ \n");
+      else
+        printf("%u\n",h_bins[i]);
+    }
+  }
+  printf("count in all bins: %d \n",count_in_bins);
+  */
 
   delete[] boids;
   delete[] h_bins;

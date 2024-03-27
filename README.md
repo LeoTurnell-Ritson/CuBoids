@@ -76,50 +76,51 @@ classDiagram
     }
 ```
 
-## Console Output
+## Console output
 
-for 1000000 boids:
+for 100000000 Boids and 10000 bins on the memory shared function:
 
-'''
-number of boids: 1000000 , number of bins: 100
+```console
+################################################################################
+######################################## INFO ########################################
+Number of SMs: 14
+Number of  max cores per SM: 1024
+Total number of CUDA cores: 896
+sharedMemPerMultiprocessor: 65536
+sharedMemPerBlock: 49152
+l2CacheSize: 1048576
+######################################## END  ########################################
+number of boids: 100000000 , number of bins: 10000
+size of boids: 1144 MB
 thread: 896
-blocks: 1117
-Boid 0 - Position: (9.700000, 5.700000, 0.000000)__HASH: 94
-Boid 1 - Position: (5.000000, 0.300000, 0.000000)__HASH: 93
-Boid 2 - Position: (4.600000, 2.700000, 0.000000)__HASH: 0
-Boid 3 - Position: (1.100000, 0.200000, 0.000000)__HASH: 0
-Boid 4 - Position: (9.200000, 8.500000, 0.000000)__HASH: 94
-Boid 5 - Position: (3.000000, 7.000000, 0.000000)__HASH: 63
-Boid 6 - Position: (4.000000, 7.600000, 0.000000)__HASH: 63
-Boid 7 - Position: (9.900000, 6.200000, 0.000000)__HASH: 94
-Boid 8 - Position: (4.500000, 8.900000, 0.000000)__HASH: 63
-Boid 9 - Position: (6.700000, 5.300000, 0.000000)__HASH: 94
-0.389959 ms | 389.959 µs | 2564.37 it/s
-bins: 
-40563272  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 189  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 63  252  _ _ _ _ _ 
-'''
+blocks: 111608
+46.4488 ms | 46448.8 µs | 21.5291 it/s
+binning on CPU
+373.615 ms | 373615 µs | 2.67655 it/s
+```
 
-for 100000 boids:
+for 100000000 Boids and 10000 bins on the NON-memory shared function:
 
-'''
-number of boids: 100000 , number of bins: 100
+```console
+################################################################################
+######################################## INFO ########################################
+Number of SMs: 14
+Number of  max cores per SM: 1024
+Total number of CUDA cores: 896
+sharedMemPerMultiprocessor: 65536
+sharedMemPerBlock: 49152
+l2CacheSize: 1048576
+######################################## END  ########################################
+number of boids: 100000000 , number of bins: 10000
+size of boids: 1144 MB
 thread: 896
-blocks: 112
-Boid 0 - Position: (9.700000, 5.700000, 0.000000)__HASH: 94
-Boid 1 - Position: (5.000000, 0.300000, 0.000000)__HASH: 93
-Boid 2 - Position: (4.600000, 2.700000, 0.000000)__HASH: 0
-Boid 3 - Position: (1.100000, 0.200000, 0.000000)__HASH: 0
-Boid 4 - Position: (9.200000, 8.500000, 0.000000)__HASH: 94
-Boid 5 - Position: (3.000000, 7.000000, 0.000000)__HASH: 63
-Boid 6 - Position: (4.000000, 7.600000, 0.000000)__HASH: 63
-Boid 7 - Position: (9.900000, 6.200000, 0.000000)__HASH: 94
-Boid 8 - Position: (4.500000, 8.900000, 0.000000)__HASH: 63
-Boid 9 - Position: (6.700000, 5.300000, 0.000000)__HASH: 94
-0.128836 ms | 128.836 µs | 7761.81 it/s
-bins: 
-477208  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 3  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 1  4  _ _ _ _ _ 
-'''
+blocks: 111608
+82.8383 ms | 82838.3 µs | 12.0717 it/s
+binning on CPU
+368.128 ms | 368128 µs | 2.71645 it/s
+```
 
+Performance difference in the range of 2. But this a trivial comparison and can not be taken as a final judgement.
 
 ## References
 
